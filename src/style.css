@@ -1,0 +1,41 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Pacifico&display=swap');
+
+* {
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	background: #1e1a20;
+}
+
+#webgl {
+	position: fixed;
+	top: 0;
+	left: 0;
+	outline: none;
+}
+
+.container {
+	display: flex;
+	height: 100vh;
+}
+
+header {
+	position: relative;
+	max-width: 40em;
+	padding-top: 12rem;
+	color: #ffeded;
+	padding-left: 10%;
+	padding-right: 10%;
+}
+
+h1 {
+	font-family: 'Pacifico', serif;
+	font-size: 6rem;
+}
+
+p {
+	font-family: 'Montserrat', serif;
+	font-size: 1.5rem;
+}
