@@ -34,10 +34,31 @@ gltfLoader.load(
 );
 
 // Lights
-const ambientLight = new THREE.AmbientLight('#ffffff', 0.3);
-// scene.add(ambientLight);
+const lightFolder = gui.addFolder('Lights');
 
-const directionalLight = new THREE.DirectionalLight(0xffffff, 1.75);
+// Point Light
+const pointLight = new THREE.PointLight(0xc1a79f, 15.3);
+pointLight.position.x = -2;
+pointLight.position.y = 2;
+pointLight.position.z = -10;
+pointLight.castShadow = true;
+scene.add(pointLight);
+
+// Point Light Controls
+const pointLightConfig = {
+	color: pointLight.color.getHex(),
+	intensity: pointLight.intensity,
+};
+
+lightFolder
+	.addColor(pointLightConfig, 'color')
+	.name('Point light color')
+	.onChange((value) => pointLight.color.set(value));
+
+lightFolder.add(pointLight, 'intensity').min(0).max(20).step(0.1).name('Point light intensity');
+
+// Directional Light
+const directionalLight = new THREE.DirectionalLight(0xe1dabc, 2.5);
 directionalLight.castShadow = true;
 directionalLight.shadow.mapSize.set(1024, 1024);
 directionalLight.shadow.camera.far = 15;
@@ -47,6 +68,19 @@ directionalLight.shadow.camera.right = 7;
 directionalLight.shadow.camera.bottom = -7;
 directionalLight.position.set(5, 5, 5);
 scene.add(directionalLight);
+
+// Directional Light Controls
+const dirLightConfig = {
+	color: directionalLight.color.getHex(),
+	intensity: directionalLight.intensity,
+};
+
+lightFolder
+	.addColor(dirLightConfig, 'color')
+	.name('Directional light color')
+	.onChange((value) => directionalLight.color.set(value));
+
+lightFolder.add(directionalLight, 'intensity').min(0).max(10).step(0.1).name('Directional light intensity');
 
 // Sizes
 const sizes = {
@@ -59,6 +93,10 @@ window.addEventListener('reset', () => {
 	// Update size
 	sizes.width = innerWidth;
 	sizes.height = innerHeight;
+
+	if (mixer) {
+		mixer.update(deltaTime);
+	}
 
 	// Update camera
 	camera.aspect = sizes.width / sizes.height;
@@ -121,6 +159,22 @@ window.addEventListener('mousemove', (event) => {
 	cursor.y = event.clientY / sizes.height - 0.5;
 });
 
+// Text animation
+gsap.from('h1', {
+	opacity: 0,
+	y: -75,
+	duration: 1.5,
+	ease: 'power2.out',
+});
+
+gsap.from('p', {
+	opacity: 0,
+	x: -75,
+	duration: 1.5,
+	delay: 0.3,
+	ease: 'power2.out',
+});
+
 // Aniamate
 const clock = new THREE.Clock();
 let previousTime = 0;
@@ -133,8 +187,8 @@ const animate = () => {
 	// Camera parallax animation
 	const parallaxX = cursor.x * 0.5;
 	const parallaxY = cursor.y * 0.5;
-	cameraGroup.position.x += (parallaxX - cameraGroup.position.x) * 4 * deltaTime;
-	cameraGroup.position.y += (parallaxY - cameraGroup.position.y) * 4 * deltaTime;
+	cameraGroup.position.x += (parallaxX - cameraGroup.position.x) * 10 * deltaTime;
+	cameraGroup.position.y += (parallaxY - cameraGroup.position.y) * 10 * deltaTime;
 
 	// Render
 	renderer.render(scene, camera);

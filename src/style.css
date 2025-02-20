@@ -33,6 +33,7 @@ header {
 h1 {
 	font-family: 'Pacifico', serif;
 	font-size: 6rem;
+	padding-bottom: 1rem;
 }
 
 p {
