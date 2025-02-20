@@ -5,6 +5,7 @@ import gsap from 'gsap';
 
 // Debug
 const gui = new GUI();
+gui.hide();
 
 // Canvas
 const canvas = document.getElementById('webgl');
@@ -27,30 +28,71 @@ gltfLoader.load(
 		gltf.scene.traverse((child) => {
 			child.intensity = 80;
 		});
+		gltf.scene.traverse((child) => {
+			if (child.isMesh) {
+				child.castShadow = true;
+				child.receiveShadow = true;
+			}
+		});
+
 		scene.add(gltf.scene);
 	},
 	undefined,
 	(error) => console.error('Error loading model:', error)
 );
 
+// Floor
+const floor = new THREE.Mesh(
+	new THREE.PlaneGeometry(75, 75),
+	new THREE.MeshStandardMaterial({ color: 0xe7dec2, roughness: 0.7, metalness: 0.1 })
+);
+floor.rotation.x = -Math.PI * 0.5;
+floor.position.x = -20;
+floor.receiveShadow = true;
+scene.add(floor);
+
+// Octahedron
+const octahedron = new THREE.Mesh(
+	new THREE.OctahedronGeometry(0.55, 0),
+	new THREE.MeshStandardMaterial({ color: 0xff88cc, roughness: 1, metalness: 1 })
+);
+octahedron.position.set(4.8, 7.8, 1.1);
+octahedron.rotation.z = Math.PI * 0.75;
+scene.add(octahedron);
+
+// Torus
+const torus = new THREE.Mesh(
+	new THREE.TorusGeometry(0.7, 0.25, 9, 50),
+	new THREE.MeshStandardMaterial({ color: 0xffff00, roughness: 1, metalness: 1 })
+);
+torus.position.set(-7, 8, -2.7);
+torus.rotation.y = Math.PI / 2;
+scene.add(torus);
+
 // Partcles
-const partclesGeometry = new THREE.SphereGeometry(80, 44, 44);
+const particlesGeometry = new THREE.SphereGeometry(35, 32, 32);
 const particlesMaterial = new THREE.PointsMaterial({
-	size: 0.35,
+	size: 0.25,
 	sizeAttenuation: true,
+	transparent: true,
+	color: new THREE.Color('#ff88cc'),
 });
-const particles = new THREE.Points(partclesGeometry, particlesMaterial);
+
+const particles = new THREE.Points(particlesGeometry, particlesMaterial);
 scene.add(particles);
 
 // Lights
 const lightFolder = gui.addFolder('Lights');
 
 // Point Light
-const pointLight = new THREE.PointLight(0xc1a79f, 15.3);
+const pointLight = new THREE.PointLight(0xc1a79f, 2.8);
 pointLight.position.x = -2;
 pointLight.position.y = 2;
 pointLight.position.z = -10;
 pointLight.castShadow = true;
+pointLight.shadow.camera.near = 0.1;
+pointLight.shadow.camera.far = 15;
+pointLight.shadow.bias = -0.005;
 scene.add(pointLight);
 
 // Point Light Controls
@@ -67,7 +109,7 @@ lightFolder
 lightFolder.add(pointLight, 'intensity').min(0).max(20).step(0.1).name('Point light intensity');
 
 // Directional Light
-const directionalLight = new THREE.DirectionalLight(0xe1dabc, 2.5);
+const directionalLight = new THREE.DirectionalLight(0xe1dabc, 3);
 directionalLight.castShadow = true;
 directionalLight.shadow.mapSize.set(1024, 1024);
 directionalLight.shadow.camera.far = 15;
@@ -76,6 +118,10 @@ directionalLight.shadow.camera.top = 7;
 directionalLight.shadow.camera.right = 7;
 directionalLight.shadow.camera.bottom = -7;
 directionalLight.position.set(5, 5, 5);
+directionalLight.shadow.camera.near = 0.1;
+directionalLight.shadow.camera.far = 15;
+directionalLight.shadow.bias = -0.005;
+
 scene.add(directionalLight);
 
 // Directional Light Controls
@@ -121,7 +167,7 @@ const cameraGroup = new THREE.Group();
 scene.add(cameraGroup);
 
 // Camera
-const camera = new THREE.PerspectiveCamera(35, sizes.width / sizes.height, 0.1, 120);
+const camera = new THREE.PerspectiveCamera(35, sizes.width / sizes.height, 0.1, 100);
 camera.position.x = 18.3676;
 camera.position.y = 3.618;
 camera.position.z = -12.114;
@@ -156,6 +202,8 @@ const renderer = new THREE.WebGLRenderer({ canvas });
 renderer.setSize(sizes.width, sizes.height);
 renderer.setClearColor('#1e1a20');
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFShadowMap;
 
 // Cursor
 const cursor = {
@@ -196,6 +244,13 @@ const animate = () => {
 	// Animate sphere
 	particles.rotation.y = Math.PI * elapsedTime * 0.01;
 	particles.rotation.x = Math.PI * elapsedTime * 0.01;
+
+	// Aniamte octahederon
+	octahedron.rotation.x = Math.PI * elapsedTime * 0.5;
+
+	// Animate torus
+	torus.rotation.y += Math.cos(Math.PI * elapsedTime) * 0.025;
+	torus.rotation.x += Math.sin(Math.PI * elapsedTime) * 0.025;
 
 	// Camera parallax animation
 	const parallaxX = cursor.x * 0.5;

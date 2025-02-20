@@ -38,5 +38,6 @@ h1 {
 
 p {
 	font-family: 'Montserrat', serif;
-	font-size: 1.25rem;
+	font-size: 1.75rem;
+	letter-spacing: 2px;
 }
