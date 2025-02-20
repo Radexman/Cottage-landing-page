@@ -33,6 +33,15 @@ gltfLoader.load(
 	(error) => console.error('Error loading model:', error)
 );
 
+// Partcles
+const partclesGeometry = new THREE.SphereGeometry(80, 44, 44);
+const particlesMaterial = new THREE.PointsMaterial({
+	size: 0.35,
+	sizeAttenuation: true,
+});
+const particles = new THREE.Points(partclesGeometry, particlesMaterial);
+scene.add(particles);
+
 // Lights
 const lightFolder = gui.addFolder('Lights');
 
@@ -112,7 +121,7 @@ const cameraGroup = new THREE.Group();
 scene.add(cameraGroup);
 
 // Camera
-const camera = new THREE.PerspectiveCamera(35, sizes.width / sizes.height, 0.1, 100);
+const camera = new THREE.PerspectiveCamera(35, sizes.width / sizes.height, 0.1, 120);
 camera.position.x = 18.3676;
 camera.position.y = 3.618;
 camera.position.z = -12.114;
@@ -183,6 +192,10 @@ const animate = () => {
 	const elapsedTime = clock.getElapsedTime();
 	const deltaTime = elapsedTime - previousTime;
 	previousTime = elapsedTime;
+
+	// Animate sphere
+	particles.rotation.y = Math.PI * elapsedTime * 0.01;
+	particles.rotation.x = Math.PI * elapsedTime * 0.01;
 
 	// Camera parallax animation
 	const parallaxX = cursor.x * 0.5;
