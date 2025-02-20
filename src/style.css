@@ -23,11 +23,11 @@ body {
 
 header {
 	position: relative;
-	max-width: 40em;
-	padding-top: 12rem;
+	max-width: 35em;
+	padding-top: 3rem;
 	color: #ffeded;
-	padding-left: 10%;
-	padding-right: 10%;
+	padding-left: 5%;
+	padding-right: 5%;
 }
 
 h1 {
@@ -37,5 +37,5 @@ h1 {
 
 p {
 	font-family: 'Montserrat', serif;
-	font-size: 1.5rem;
+	font-size: 1.25rem;
 }
